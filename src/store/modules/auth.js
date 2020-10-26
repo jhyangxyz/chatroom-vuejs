@@ -6,7 +6,11 @@ const state = () => ({
 })
 
 // getters
-const getters = {}
+const getters = {
+    isAuthenticated(state) {
+        return state.status.loggedIn
+    }
+}
 
 // actions
 const actions = {}
