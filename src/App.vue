@@ -90,7 +90,22 @@
 
     <v-main>
       <v-container fluid>
-        <router-view></router-view>
+<!--        <router-view></router-view>-->
+
+        <v-row v-for="message in messages" v-bind:key="message.id">
+          <div>
+<!--            <div class="username">{{message.name}}</div>-->
+            <v-avatar
+                size="28"
+                color="primary"
+            ></v-avatar>
+          </div>
+          <div>
+            <div class="content primary rounded-xl pa-2 px-4" style="max-width: 265px">
+              <div v-html="message.body"></div>
+            </div>
+          </div>
+        </v-row>
       </v-container>
     </v-main>
 
@@ -101,21 +116,22 @@
         inset
     >
       <v-text-field
+          v-model="messageBody"
+          v-on:keyup.enter="sendMessage"
+          @click:append="sendMessage"
           background-color="grey lighten-1"
           dense
           flat
           hide-details
           rounded
           solo
-          append-icon="md-send"
-          @click:append="sendMessage"
+          append-icon="send"
       ></v-text-field>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-import socket from "@/plugins/socket";
 
 export default {
   name: 'App',
@@ -125,7 +141,12 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('channels/init', socket)
+    this.$store.dispatch('socket/init')
+        .then(() => {
+          this.$store.dispatch('channels/init')
+          this.$store.dispatch('messages/subscribeNewMessage')
+        })
+
   },
 
   data: () => ({
@@ -133,18 +154,23 @@ export default {
       {
         title: 'channelName1',
       },
-    ]
+    ],
+    messageBody: ''
   }),
 
   computed: {
     users() {
       return this.$store.state.users.all
+    },
+    messages() {
+      return this.$store.state.messages.all
     }
   },
 
   methods: {
     sendMessage() {
-      console.log('clicked')
+      this.$store.dispatch('messages/sendMessage', {username: this.$store.state.auth.user, body: this.messageBody})
+      this.messageBody = ''
     }
   }
 };

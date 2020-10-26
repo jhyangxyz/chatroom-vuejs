@@ -6,8 +6,6 @@ const formatTimestamp = (Ts) => {
 }
 
 const listBy = (user, {metas: metas}) => {
-    console.log(user)
-    console.log(metas)
     return {
         user: user,
         onlineAt: formatTimestamp(metas[0].online_at),
@@ -27,7 +25,9 @@ let presences = {}
 
 // actions
 const actions = {
-    init({ state, dispatch }, socket) {
+
+    init({ state, dispatch, rootState }) {
+        const socket = rootState.socket.socket
 
         state.channel = socket.channel('chat_room:lobby', {})
 
@@ -48,11 +48,14 @@ const actions = {
             presences = Presence.syncDiff(presences, presence_diff)
             rootState.users.all = Presence.list(presences, listBy);
         })
+    },
 
-        state.channel.on('message:new', payload => {
-            console.log('message:new')
-            console.log(payload)
-        })
+    subscribeTopic({ state }, {topic, callback}) {
+        state.channel.on(topic, callback)
+    },
+
+    pushToChannel({ state }, {topic, payload}) {
+      state.channel.push(topic, payload)
     }
 }
 
