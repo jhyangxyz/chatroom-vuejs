@@ -1,7 +1,8 @@
 import {Socket} from "phoenix"
 
 const state = () => ({
-    socket:  null
+    socket:  null,
+    connected: false
 })
 
 // getters
@@ -10,11 +11,16 @@ const getters = {}
 // actions
 const actions = {
     init({ state, rootState }) {
-        state.socket = new Socket("ws://localhost:4000/socket", {
-            params: { user: rootState.auth.user }
-        })
+        if (!state.connected) {
+            state.connected = true
+            state.socket = new Socket("ws://localhost:4000/socket", {
+                params: {
+                    token: rootState.auth.user.phoenix_token
+                }
+            })
 
-        state.socket.connect()
+            state.socket.connect()
+        }
     },
 }
 

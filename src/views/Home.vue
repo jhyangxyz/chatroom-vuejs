@@ -33,6 +33,17 @@ export default {
     messages() {
       return this.$store.state.messages.all
     }
+  },
+  beforeRouteEnter (to, from, next) {
+
+    next(vm => {
+      // access to component instance via `vm`
+      vm.$store.dispatch('socket/init')
+          .then(() => {
+            vm.$store.dispatch('channels/init')
+            vm.$store.dispatch('messages/subscribeNewMessage')
+          })
+    })
   }
 }
 </script>

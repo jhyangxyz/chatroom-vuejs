@@ -2,26 +2,7 @@
   <v-app>
     <side-bar/>
 
-    <v-app-bar
-        app
-        clipped-right
-        flat
-        height="72"
-        color="primary"
-    >
-      <v-spacer></v-spacer>
-
-      <v-responsive max-width="156">
-        <v-text-field
-            dense
-            flat
-            hide-details
-            rounded
-            solo-inverted
-            prepend-inner-icon="mdi-magnify"
-        ></v-text-field>
-      </v-responsive>
-    </v-app-bar>
+    <top-bar/>
 
 
     <v-main>
@@ -58,11 +39,13 @@
 <script>
 
 import SideBar from "@/SideBar";
+import TopBar from "@/TopBar";
 
 export default {
   name: 'App',
 
   components: {
+    TopBar,
     SideBar
   },
 
@@ -78,7 +61,7 @@ export default {
 
   methods: {
     sendMessage() {
-      this.$store.dispatch('messages/sendMessage', {username: this.$store.state.auth.user, body: this.messageBody})
+      this.$store.dispatch('messages/sendMessage', {username: this.$store.state.auth.user.name, body: this.messageBody})
       this.messageBody = ''
     }
   }
